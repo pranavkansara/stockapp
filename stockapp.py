@@ -6,7 +6,7 @@ import pandas as pd; import pandas_datareader as web; import numpy as np
 import matplotlib.pyplot as plt; 
 import yahoofinance as yf
 import datetime
-basepath = 'C:\\Users\\aumja\\Google Drive\\Learning\\Projects\\StockappStreamlit'
+#basepath = 'C:\\Users\\aumja\\Google Drive\\Learning\\Projects\\StockappStreamlit\\'
 #%%
 #symbol='MSFT'
 @st.cache(allow_output_mutation=True)
@@ -126,7 +126,7 @@ if stk != '':
 
 
 if st.sidebar.checkbox("Get Financials"):  
-    dffin = pd.read_excel('C:\\Users\\aumja\\Google Drive\\Investment\\Analysis\\StockchartsUS\stockfinancials.xlsx')
+    dffin = pd.read_excel('stockfinancials.xlsx')
     dffin.columns=['Company Name','Symbol','Industry','Financials as of','Revenue','EBIT','Operating Income','Net Income','Net Income from Continuing Operations','Total Operating Cashflow','Total Long Term Debt']
     st.table(dffin[dffin.Symbol==stk].T)
     #dffin.assign(tmp='').set_index('tmp',inplace=True)
@@ -136,17 +136,17 @@ if st.sidebar.checkbox("Get Financials"):
 
 if st.sidebar.checkbox("Enter/view comments"):
     #prevcomments = {'NFLX':['2020-08-10','My previous comments here'],'MSFT':['2020-08-10','My previous comments']}
-    comments = pickle.load(open(basepath+'stockcomments.pkl','rb'))
+    comments = pickle.load(open('stockcomments.pkl','rb'))
     comment = comments.get(stk,'')
     txtarea = st.sidebar.text_area("Comments",value=comment)
     comments[stk] = txtarea
-    pickle.dump(comments,open(basepath+'stockcomments.pkl','wb'))
+    pickle.dump(comments,open('stockcomments.pkl','wb'))
 
 #dfvirtualtrades = pd.DataFrame(None,columns=['Symbol','Quantity','Buydt','Buyprice','Selldt','Sellprice','stoploss','traderationale','CMP','Netgain'])
-#dfvirtualtrades.to_pickle(basepath+'virtualtrades.pkl')
+#dfvirtualtrades.to_pickle('virtualtrades.pkl')
 
 if st.sidebar.checkbox("Enter trade in virtual portfolio"):
-    dfvirtualtrades = pd.read_pickle(basepath+'virtualtrades.pkl')   
+    dfvirtualtrades = pd.read_pickle('virtualtrades.pkl')   
     numrecords = len(dfvirtualtrades)
     #stk = 'MSFT'
     stoploss = st.sidebar.number_input('Enter stoploss',value=0)
@@ -159,13 +159,13 @@ if st.sidebar.checkbox("Enter trade in virtual portfolio"):
         qty = round(10000/cmp,0)
         dfvirtualtrades.loc[numrecords+1] = [stk,qty,currdt,cmp,np.NaN,np.NaN,stoploss,rationale,np.NaN,np.NaN]
         trades = st.write(dfvirtualtrades[dfvirtualtrades['Symbol']==stk])
-        dfvirtualtrades.to_pickle(basepath+'virtualtrades.pkl')
+        dfvirtualtrades.to_pickle('virtualtrades.pkl')
     if st.sidebar.button("Sell"):
         cmp = round(stockraw.tail(1)['Adj Close'][0],2)
         currdt = stockraw.tail(1).index[0].strftime('%m/%d/%Y')
         qty = round(10000/cmp,0)
         dfvirtualtrades.loc[numrecords+1] = [stk,qty,np.NaN,np.NaN,currdt,cmp,stoploss,rationale,np.NaN,np.NaN]
         trades = st.write(dfvirtualtrades[dfvirtualtrades['Symbol']==stk])
-        dfvirtualtrades.to_pickle(basepath+'virtualtrades.pkl')
+        dfvirtualtrades.to_pickle('virtualtrades.pkl')
                            
     
